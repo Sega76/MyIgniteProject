@@ -38,7 +38,6 @@ public class Test {
                                 )
                         )))) {
 
-
             IgniteRunnable runtx = new RunTX.Builder("Test_Transactional_Replicated")
                     .latency(100L)
                     .size(100L)
