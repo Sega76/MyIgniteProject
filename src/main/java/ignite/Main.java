@@ -21,7 +21,7 @@ import org.apache.ignite.transactions.TransactionIsolation;
 import java.util.Arrays;
 import java.util.List;
 
-public class Test {
+public class Main {
     public static void main(String[] args) throws InterruptedException {
         Ignition.setClientMode(true);
         try (Ignite ignite = Ignition.start(new IgniteConfiguration()
