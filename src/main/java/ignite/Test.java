@@ -11,7 +11,6 @@ import org.apache.ignite.configuration.BinaryConfiguration;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.DeploymentMode;
 import org.apache.ignite.configuration.IgniteConfiguration;
-import org.apache.ignite.internal.IgniteEx;
 import org.apache.ignite.lang.IgniteRunnable;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
@@ -44,6 +43,7 @@ public class Test {
                     .transactionConcurrency(TransactionConcurrency.OPTIMISTIC)
                     .transactionIsolation(TransactionIsolation.READ_COMMITTED)
                     .build();
+
             IgniteRunnable runPrint = new RunPrint("Test_Transactional_Replicated",100L,1000L);
 
             List <IgniteRunnable> arr = Arrays.asList(runtx,runPrint);
@@ -52,18 +52,16 @@ public class Test {
             ignite.compute().run(arr);
 Thread.sleep(30000);
             System.out.println(checkCache(ignite, "Test_Transactional_Replicated"));
-
-
         }
     }
 
     public static void createCache(Ignite ignite, String cacheName) {
-
         IgniteCache<Long, Long> cache = ignite.getOrCreateCache(
                 new CacheConfiguration<Long, Long>()
                         .setName(cacheName)
                         .setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL)
                         .setCacheMode(CacheMode.REPLICATED));
+
         cache.put(1L, 0L);
         System.out.println(cache.get(1L));
     }
@@ -72,5 +70,4 @@ Thread.sleep(30000);
         IgniteCache<Long, Long> cache = ignite.getOrCreateCache(cacheName);
         return cache.get(1L);
     }
-
 }

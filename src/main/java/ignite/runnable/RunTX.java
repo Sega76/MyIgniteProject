@@ -7,7 +7,6 @@ import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.transactions.Transaction;
 import org.apache.ignite.transactions.TransactionConcurrency;
 import org.apache.ignite.transactions.TransactionIsolation;
-
 import java.time.LocalDateTime;
 
 public class RunTX implements IgniteRunnable {
