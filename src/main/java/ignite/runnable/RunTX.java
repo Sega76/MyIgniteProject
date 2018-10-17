@@ -25,7 +25,7 @@ public class RunTX implements IgniteRunnable {
         IgniteCache<Long, Long> cache = ignite.getOrCreateCache(cacheName);
         try (Transaction t = ignite.transactions().txStart(transactionConcurrency, transactionIsolation)) {
             for (Long i = 0L; i < size; i++) {
-                cache.put(1L, cache.get(1l) + 1L);
+                cache.put(1L, cache.get(1L) + 1L);
                 Thread.sleep(latency);
             }
             t.commit();
@@ -38,6 +38,7 @@ public class RunTX implements IgniteRunnable {
 
     public static class Builder {
         private final String cacheName;
+        //default values
         private Long size = 1000L;
         private TransactionIsolation transactionIsolation = TransactionIsolation.REPEATABLE_READ;
         private TransactionConcurrency transactionConcurrency = TransactionConcurrency.PESSIMISTIC;

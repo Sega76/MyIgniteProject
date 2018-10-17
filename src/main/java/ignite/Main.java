@@ -38,19 +38,21 @@ public class Main {
                         )))) {
 
             IgniteRunnable runtx = new RunTX.Builder("Test_Transactional_Replicated")
-                    .latency(100L)
-                    .size(100L)
+//                    .latency(10L)
+//                    .size(1000L)
                     .transactionConcurrency(TransactionConcurrency.OPTIMISTIC)
                     .transactionIsolation(TransactionIsolation.READ_COMMITTED)
                     .build();
 
-            IgniteRunnable runPrint = new RunPrint("Test_Transactional_Replicated",100L,1000L);
+            IgniteRunnable runPrint = new RunPrint("Test_Transactional_Replicated", 100L, 100L);
 
-            List <IgniteRunnable> arr = Arrays.asList(runtx,runPrint);
+            List<IgniteRunnable> arr = Arrays.asList(runtx
+                    , runPrint
+            );
 
-            createCache(ignite,"Test_Transactional_Replicated");
+//            createCache(ignite, "Test_Transactional_Replicated");
             ignite.compute().run(arr);
-Thread.sleep(30000);
+            Thread.sleep(3000);
             System.out.println(checkCache(ignite, "Test_Transactional_Replicated"));
         }
     }
@@ -66,7 +68,7 @@ Thread.sleep(30000);
         System.out.println(cache.get(1L));
     }
 
-    public static Long checkCache(Ignite ignite, String cacheName){
+    public static Long checkCache(Ignite ignite, String cacheName) {
         IgniteCache<Long, Long> cache = ignite.getOrCreateCache(cacheName);
         return cache.get(1L);
     }
