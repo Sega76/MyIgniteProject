@@ -6,16 +6,14 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
-import org.apache.ignite.configuration.BinaryConfiguration;
-import org.apache.ignite.configuration.CacheConfiguration;
-import org.apache.ignite.configuration.DeploymentMode;
-import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.configuration.*;
 import org.apache.ignite.lang.IgniteRunnable;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.apache.ignite.transactions.Transaction;
+
 import static org.apache.ignite.transactions.TransactionConcurrency.OPTIMISTIC;
 import static org.apache.ignite.transactions.TransactionConcurrency.PESSIMISTIC;
 import static org.apache.ignite.transactions.TransactionIsolation.READ_COMMITTED;
@@ -30,10 +28,14 @@ import java.util.Random;
  * Example02
  */
 public class Example02 {
-    /** Cache name. */
+    /**
+     * Cache name.
+     */
     private static final String CACHE_NAME = "TestCache";
 
-    /** Total number of entries to use in the example. */
+    /**
+     * Total number of entries to use in the example.
+     */
     private static int ENTRIES_COUNT = 10;
 
     public static void main(String[] args) throws IgniteException, InterruptedException {
@@ -45,6 +47,8 @@ public class Example02 {
                         .setCompactFooter(true))
                 .setCommunicationSpi(new TcpCommunicationSpi()
                         .setLocalAddress("localhost"))
+                        .setTransactionConfiguration(new TransactionConfiguration()
+                                .setDefaultTxTimeout(5_000L))
                 .setDiscoverySpi(new TcpDiscoverySpi()
                         .setIpFinder(new TcpDiscoveryVmIpFinder()
                                 .setAddresses(Arrays.asList("127.0.0.1:47500..47509")
@@ -65,17 +69,17 @@ public class Example02 {
                 printAccounts(cache);
                 printTotalBalance(cache);
 
-                IgniteRunnable run1 = new MyIgniteRunnable(cache,1);
-                IgniteRunnable run2 = new MyIgniteRunnable(cache,2);
+                IgniteRunnable run1 = new MyIgniteRunnable(cache, 1);
+                IgniteRunnable run2 = new MyIgniteRunnable(cache, 2);
 
-                List<IgniteRunnable> arr = Arrays.asList(run1,run2);
+                List<IgniteRunnable> arr = Arrays.asList(run1, run2);
 //                ignite.compute().run(new MyIgniteRunnable(cache,1));
                 ignite.compute().run(arr);
-                Thread.sleep(10_000L);
+                Thread.sleep(30_000L);
 
 //                Thread th1 = new Thread(new MyIgniteRunnable(cache,1));
 //                Thread th2 = new Thread(new MyIgniteRunnable(cache,2));
-                
+
 
 //                th1.start();
 //                th2.start();
@@ -150,7 +154,7 @@ public class Example02 {
 //        }
 //    }
 
-    private  static void printAccounts(IgniteCache<Integer, Account> cache) {
+    private static void printAccounts(IgniteCache<Integer, Account> cache) {
         for (int acctId = 1; acctId <= ENTRIES_COUNT; acctId++)
             System.out.println("[" + acctId + "] = " + cache.get(acctId));
     }

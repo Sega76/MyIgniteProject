@@ -2,6 +2,7 @@ package ignite.other;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.internal.transactions.IgniteTxTimeoutCheckedException;
 import org.apache.ignite.lang.IgniteRunnable;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.transactions.Transaction;
@@ -29,7 +30,7 @@ public class MyIgniteRunnable implements IgniteRunnable {
 
     @Override
     public void run() {
-        for (int i = 1; i <= 20; i++) {
+        for (int i = 1; i <= 1000; i++) {
             System.out.println("iteration number "+i);
             transferMoney(this.cache, this.ignite, clientId);
 //            this.notify();
@@ -51,7 +52,7 @@ public class MyIgniteRunnable implements IgniteRunnable {
 
 
     private void transferMoney(IgniteCache<Integer, Account> cache, Ignite ignite, Integer clientId) {
-        try (Transaction tx = ignite.transactions().txStart(OPTIMISTIC, SERIALIZABLE)) {
+        try (Transaction tx = ignite.transactions().txStart(PESSIMISTIC, REPEATABLE_READ)) {
             System.out.println("start TX on client "+clientId);
             int fromAccountId = getRandomNumberInRange(1, ENTRIES_COUNT);
             int toAccountId =  getRandomNumberInRange(1, ENTRIES_COUNT);
@@ -94,6 +95,8 @@ public class MyIgniteRunnable implements IgniteRunnable {
                     "Client " + clientId + " account " + toAccountId + " balance after transfer is $" + toAccountBalanceAfterTransfer + "\n";
             System.out.println(message);
             tx.commit();
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 

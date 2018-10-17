@@ -9,5 +9,8 @@
         <module name="MyIgniteProject" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="MyIgniteProject" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
