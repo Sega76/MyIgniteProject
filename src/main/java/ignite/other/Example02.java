@@ -6,6 +6,7 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
+import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.configuration.*;
 import org.apache.ignite.lang.IgniteRunnable;
 import org.apache.ignite.resources.IgniteInstanceResource;
@@ -60,9 +61,12 @@ public class Example02 {
             cfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
 
             try (IgniteCache<Integer, Account> cache = ignite.getOrCreateCache(cfg)) {
+                cache.size(CachePeekMode.ALL);
+                
                 // Initializing the cache.
                 for (int i = 1; i <= ENTRIES_COUNT; i++)
                     cache.put(i, new Account(i, 100));
+
 
                 System.out.println("Accounts before transfers");
                 System.out.println();
@@ -75,7 +79,6 @@ public class Example02 {
                 List<IgniteRunnable> arr = Arrays.asList(run1, run2);
 //                ignite.compute().run(new MyIgniteRunnable(cache,1));
                 ignite.compute().run(arr);
-                Thread.sleep(30_000L);
 
 //                Thread th1 = new Thread(new MyIgniteRunnable(cache,1));
 //                Thread th2 = new Thread(new MyIgniteRunnable(cache,2));
@@ -96,66 +99,8 @@ public class Example02 {
         }
     }
 
-//    private static int getRandomNumberInRange(int min, int max) {
-//
-//        if (min > max) {
-//            throw new IllegalArgumentException("max (" + max + ") must be greater than min (" + min + ")");
-//        }
-//
-//        Random r = new Random();
-//        return r.nextInt((max - min) + 1) + min;
-//    }
-//
-//    protected synchronized static int getRandomAmount(int maxAmount) {
-//        return getRandomNumberInRange(0, maxAmount);
-//    }
-
-//    private static void transferMoney(IgniteCache<Integer, Account> cache, Ignite ignite, Integer clientId) {
-//        try (Transaction tx = ignite.transactions().txStart(PESSIMISTIC, SERIALIZABLE)) {
-//            int fromAccountId = getRandomNumberInRange(1, ENTRIES_COUNT);
-//            int toAccountId = getRandomNumberInRange(1, ENTRIES_COUNT);
-//
-//            while (fromAccountId == toAccountId) {
-//                toAccountId = getRandomNumberInRange(1, ENTRIES_COUNT);
-//            }
-//
-//            Account fromAccount = cache.get(fromAccountId);
-//            Account toAccount = cache.get(toAccountId);
-//
-//            int amount = getRandomAmount(fromAccount.balance);
-//            if (amount < 1) {
-//                // No money
-//                return;
-//            }
-//
-//            int fromAccountBalanceBeforeTransfer = fromAccount.balance;
-//            int toAccountBalanceBeforeTransfer = toAccount.balance;
-//
-//            // Withdraw from account
-//            fromAccount.withdraw(amount);
-//
-//            // Deposit into account.
-//            toAccount.deposit(amount);
-//
-//            int fromAccountBalanceAfterTransfer = fromAccount.balance;
-//            int toAccountBalanceAfterTransfer = toAccount.balance;
-//
-//            // Store updated accounts in cache.
-//            cache.put(fromAccountId, fromAccount);
-//            cache.put(toAccountId, toAccount);
-//
-//            String message = "Client " + clientId + " transfers $" + amount + " from account " + fromAccountId + " to account " + toAccountId + "\n" +
-//                    "Client " + clientId + " account " + fromAccountId + " balance before transfer is $" + fromAccountBalanceBeforeTransfer + "\n" +
-//                    "Client " + clientId + " account " + toAccountId + " balance before transfer is $" + toAccountBalanceBeforeTransfer + "\n" +
-//                    "Client " + clientId + " account " + fromAccountId + " balance after transfer is $" + fromAccountBalanceAfterTransfer + "\n" +
-//                    "Client " + clientId + " account " + toAccountId + " balance after transfer is $" + toAccountBalanceAfterTransfer + "\n";
-//            System.out.println(message);
-//            tx.commit();
-//        }
-//    }
-
     private static void printAccounts(IgniteCache<Integer, Account> cache) {
-        for (int acctId = 1; acctId <= ENTRIES_COUNT; acctId++)
+        for (Integer acctId = 1; acctId <= ENTRIES_COUNT; acctId++)
             System.out.println("[" + acctId + "] = " + cache.get(acctId));
     }
 
